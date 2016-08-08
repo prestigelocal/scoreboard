@@ -260,7 +260,7 @@ func mlbPing(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(body) != 0 {
 		s, err := unmarshallResponse([]byte(body))
-		fmt.Println("First game time: ", s.Data.Games)
+		fmt.Println("First game time: ", s)
 		if err != nil {
 			fmt.Fprintf(w, err.Error())
 			return
