@@ -1,0 +1,5 @@
+version: 1
+
+scripts:
+ - name: install deferstats
+   command: go get -u "github.com/deferpanic/deferclient/deferstats"
