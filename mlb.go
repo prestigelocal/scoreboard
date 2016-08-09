@@ -3,11 +3,9 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"net/http"
-	"github.com/deferpanic/deferclient/deferstats"
 	"time"
 	"encoding/json"
-	"strconv"
+	"net/http"
 )
 
 type MLBApiResponse struct {
@@ -238,40 +236,31 @@ func unmarshallResponse(body []byte) (*MLBApiResponse, error) {
 	return s, err
 }
 
-func mlbPing(w http.ResponseWriter, r *http.Request) {
-	t := time.Now()
-	d := int(t.Day())
-	day := strconv.Itoa(d)
-	m := int(t.Month())
-	month := strconv.Itoa(m)
-	y := int(t.Year())
-	year := strconv.Itoa(y)
-	url := "http://gd2.mlb.com/components/game/mlb/year_" + year + "/month_" + month + "/day_" + day + "/master_scoreboard.json"
-	resp, err := http.Get(url)
+func mlbPing() {
+	url := "http://gd2.mlb.com/components/game/mlb/year_2016/month_08/day_08/master_scoreboard.json"
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		fmt.Fprintf(w, err.Error())
+		return
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println("error", err.Error())
 		return
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Fprintf(w, err.Error())
+		fmt.Println("error", err.Error())
 		return
 	}
 	if len(body) != 0 {
 		s, err := unmarshallResponse([]byte(body))
-		fmt.Println("First game time: ", s)
+		fmt.Println("First game time: ", s.Data.Games.Game[0].HomeTime)
 		if err != nil {
-			fmt.Fprintf(w, err.Error())
+			fmt.Println("error", err.Error())
 			return
 		}
 	}
 }
 
-func main() {
-	dps := deferstats.NewClient("z57z3xsEfpqxpr0dSte0auTBItWBYa1c")
-	go dps.CaptureStats()
-
-	http.HandleFunc("/mlb", dps.HTTPHandlerFunc(mlbPing))
-	http.ListenAndServe(":3000", nil)
-}
