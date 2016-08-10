@@ -5,6 +5,7 @@ import (
 	"os"
 	"github.com/takama/daemon"
 	"github.com/robfig/cron"
+
 )
 
 var (
@@ -17,7 +18,6 @@ func (service *Service) StartJob() (string, error) {
 	f.WriteString("can write")
 
 	cronJob.AddFunc(jobSchedule, func() {
-		mlbPing()
 	})
 
 	cronJob.Start()
@@ -29,13 +29,10 @@ func main() {
 	srv, err := daemon.New(name, description)
 	service := &Service{srv}
 	status, err := service.Manage()
+
 	if err != nil {
 		fmt.Println(status, "\nError: ", err)
 		os.Exit(1)
 	}
 	fmt.Println(status)
-
-	esClient := initESClient()
-	defer esClient.Stop()
-
 }
