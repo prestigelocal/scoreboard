@@ -44,12 +44,7 @@ func (service *Service) Manage() (string, error) {
 	signal.Notify(interrupt, os.Interrupt, os.Kill, syscall.SIGTERM)
 
 	http.HandleFunc("/mlb", func(w http.ResponseWriter, r *http.Request) {
-
-		mlbPing(w, r)
-	})
-
-	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("test")
+		mlbPing()
 	})
 
 	err := http.ListenAndServe(":8081", nil)

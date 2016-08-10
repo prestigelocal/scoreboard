@@ -8,10 +8,9 @@ import (
 	"github.com/treetopllc/elastilog"
 )
 
-func mlbPing(w http.ResponseWriter, r *http.Request) {
+func mlbPing() {
 
 	c := elastilog.NewClient("http://172.17.0.3:9200", "ping", "scoreboard")
-
 	url := "http://gd2.mlb.com/components/game/mlb/year_2016/month_08/day_08/master_scoreboard.json"
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
@@ -31,7 +30,7 @@ func mlbPing(w http.ResponseWriter, r *http.Request) {
 		Host:      "debian-jessie",
 		Log:       "SLOW:",
 		Attributes: elastilog.Attributes{
-			"service":         string(body),
+			"payload":         string(body),
 		},
 	})
 	c.Close()
@@ -40,7 +39,6 @@ func mlbPing(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(body) != 0 {
-		fmt.Fprintf(w, string(body))
 	}
 }
 

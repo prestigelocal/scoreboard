@@ -5,7 +5,6 @@ import (
 	"os"
 	"github.com/takama/daemon"
 	"github.com/robfig/cron"
-
 )
 
 var (
@@ -18,6 +17,7 @@ func (service *Service) StartJob() (string, error) {
 	f.WriteString("can write")
 
 	cronJob.AddFunc(jobSchedule, func() {
+		mlbPing()
 	})
 
 	cronJob.Start()
